@@ -1,0 +1,23 @@
+[project]
+name = "dms-delib"
+version = "0.1.0"
+description = "Reference models from lifelib's delib library, kept as a revision history for release-deviation analysis"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "modelx>=0.33.0",
+    "numpy>=2",
+    "pandas>=3.0.6",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
