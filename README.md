@@ -47,6 +47,8 @@ The portfolio is synthetic and contains no client data. It is built to exercise 
 
 ## History
 
+The main line is the chain of first parents of `main`: `git log --first-parent main` lists it. Each of its commits is one change, and a branch that was merged is one change, the merge; the commits inside the branch are not on the main line. The commit message says what the change is meant to do, and the files it touches say what kind of change it is: `model_point_table.csv` is data, the other CSV files of the product folder are parameters, and the folder `RLV_DE_S` is code.
+
 The history of the main line is never rewritten: a commit hash names a release for good. A change that moves a result updates the pinned hashes in `tests/test_release_n.py` in the same commit, and so does a change of a file that was copied from upstream: byte identity with upstream holds for the commit of release N, and the tests pin the present bytes of every file a later commit has changed.
 
 The commit after `244f18b`, *Set the model back to release N and keep the three fixes*, holds the data, parameters and code of release N with the three fixes of `038dd35`, `78d8baa` and `244f18b`, which keep every result bit for bit, and the commits after it repeat the earlier changes from `25a166a` to `fefc8cc` on the fixed model, in their order and with their messages.
