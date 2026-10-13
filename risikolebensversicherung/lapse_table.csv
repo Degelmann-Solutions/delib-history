@@ -1,5 +1,5 @@
 policy_year,lapse_rate,provenance
-1,0.06,[std] year 1; nothing is forfeited by lapsing and the 30-day Widerrufsfrist [R8] sits inside it; argued range 2-8 pct (gap 13)
+1,0.05,[std] year 1; nothing is forfeited by lapsing and the 30-day Widerrufsfrist [R8] sits inside it; argued range 2-8 pct (gap 13)
 2,0.04,"[std] years 2-3; early-duration attrition, argued range 2-8 pct (gap 13); the GDV whole-market Stornoquote [R18] is deliberately not used"
 3,0.04,"[std] years 2-3; early-duration attrition, argued range 2-8 pct (gap 13); the GDV whole-market Stornoquote [R18] is deliberately not used"
 4,0.03,"[std] year 4 onward; flat tail, argued range 2-8 pct (gap 13); lapse_rate(n) is zeroed by the model, not by this table"

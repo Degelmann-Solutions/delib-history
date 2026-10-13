@@ -34,9 +34,11 @@ RELEASE_N_RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c9
 
 # The present state. Files copied from upstream that a commit after release N has
 # changed, by their name in UPSTREAM.md, with the SHA-256 of their present bytes.
-CHANGED_SINCE_RELEASE_N: dict[str, str] = {}
+CHANGED_SINCE_RELEASE_N: dict[str, str] = {
+    "lapse_table.csv": "d1b8eb3852505452252c0087533b2587a4c98f9ef7e311d448cd94f88f9ec3cc",
+}
 PORTFOLIO_HASH = RELEASE_N_PORTFOLIO_HASH
-RESULT_HASH = RELEASE_N_RESULT_HASH
+RESULT_HASH = "d9b5334a0bcef5e300118945f3952c2fe35441d541fc5a325cdc63f98f34efc5"
 
 
 def sha256(path: Path) -> str:
