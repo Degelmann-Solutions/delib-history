@@ -978,15 +978,19 @@ def suicide_factor(t):
 def lapse_rate_base(t):
     """The table lapse rate for period t, from *lapse_table.csv*.
 
-    6 % in policy year 1, 4 % in policy years 2 and 3, 3 % thereafter, all **[std]**.  The
-    file is keyed on the contractual **1-based** ``policy_year``, so the lookup maps
-    through :func:`policy_year` — months ``t = 0 ... 11`` read the file's policy year 1.
-    An **annual** rate, and one the table publishes for the final policy year too;
-    :func:`lapse_rate` is where the zero goes and :func:`lapse_rate_mth` is where the
-    spreading happens.
+    The table holds two rates per policy year, both **[std]**: ``lapse_rate`` for a
+    policy on a running premium, and ``lapse_rate_einmal`` for a single-premium policy,
+    which has no premium left to stop paying and is set at half the running-premium rate.
+    The column is chosen by :func:`premium_form`.  The values are those of the file; this
+    docstring does not repeat them.  The file is keyed on the contractual **1-based**
+    ``policy_year``, so the lookup maps through :func:`policy_year` — months
+    ``t = 0 ... 11`` read the file's policy year 1.  An **annual** rate, and one the table
+    publishes for the final policy year too; :func:`lapse_rate` is where the zero goes and
+    :func:`lapse_rate_mth` is where the spreading happens.
     """
+    column = "lapse_rate_einmal" if premium_form() == "einmal" else "lapse_rate"
     return float(data.lapse_table().at[                              # noqa: F821
-        policy_year(t), "lapse_rate"])
+        policy_year(t), column])
 
 
 def shock_lapse_factor(t):

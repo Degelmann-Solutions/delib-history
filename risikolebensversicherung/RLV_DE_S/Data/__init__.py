@@ -113,7 +113,10 @@ take-up is exogenous — a schedule, not a modelled decision. What the model doe
 not exogenous: each increment carries **its own** three-year § 161 window, so
 ``suicide_factor`` is a weighted average across tranches in the years after an increase.
 
-``lapse_table.csv`` is 6 % in policy year 1, 4 % in years 2 and 3 and 3 % thereafter, all
+``lapse_table.csv`` holds a rate for policy year 1, one for years 2 and 3 and one
+thereafter, in two columns: ``lapse_rate`` for running premiums and ``lapse_rate_einmal``,
+half of it, for single premiums. Upstream shipped 6 %, 4 % and 3 % in the one column
+``lapse_rate``; later revisions of this repository changed the values. All
 **[std]**, argued from three structural features rather than from data: nothing is
 forfeited by lapsing, exit is frictionless in time because the *Versicherungsperiode*
 follows the *Zahlweise*, and the need that motivated the purchase amortises. The GDV
@@ -211,6 +214,8 @@ def nvg_schedule():
 def lapse_table():
     """The annual lapse rates by **1-based** policy year, read from *lapse_table.csv*.
 
+    Two value columns: ``lapse_rate`` for a running premium and ``lapse_rate_einmal`` for
+    a single premium; ``Projection.lapse_rate_base`` chooses between them.
     Entirely **[std]**: no *Risikoversicherung*-specific German rate exists in the source
     corpus, and the whole-market *Stornoquote* is deliberately not used.  The final policy
     year's row is a live 3 % and is overridden to zero by ``Projection.lapse_rate``, which
