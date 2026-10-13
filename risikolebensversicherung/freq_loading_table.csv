@@ -1,5 +1,5 @@
 prem_freq,instalments,prem_freq_load,provenance
 jaehrlich,1,1.0,[std] annual in advance is the actuarial base case; no Ratenzahlungszuschlag (mechanic 7)
 halbjaehrlich,2,1.02,[std] 2 pct half-yearly; German market convention with no carrier attribution (gap 21)
-vierteljaehrlich,4,1.03,[std] 3 pct quarterly; German market convention with no carrier attribution (gap 21)
+vierteljaehrlich,4,1.025,[std] 2.5 pct quarterly; lowered from the 3 pct of the German market convention (gap 21) by this repository
 monatlich,12,1.04,[std] 4 pct monthly; lowered from the 5 pct of the German market convention (gap 21) by this repository
