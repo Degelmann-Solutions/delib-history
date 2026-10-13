@@ -1702,7 +1702,7 @@ def comm_init_pp():
 
 
 def inflation_factor(t):
-    """(1 + pi)^duration(t): expense inflation on the sum-related admin charge only.
+    """(1 + pi)^duration(t): expense inflation on the sum-related admin charge and the claim expense.
 
     2,0 % a year **[std]**, stepping on the **policy anniversary** and flat across a
     policy year's twelve months — the form ``Sofort_DE_S`` already uses in this library,
@@ -1753,7 +1753,10 @@ def expenses(t):
     Acquisition cost net of the initial commission in month ``t = 0`` and only where
     ``duration_y = 0`` — a single amount at issue, not an annualised loading and not a
     twelfth of one; maintenance and collection on the opening in-force; and the claim
-    expense on the month's deaths, 250 € each **[std]**.
+    expense on the month's deaths, 250 € each **[std]** at issue prices, inflated with
+    :func:`inflation_factor` as the administration charge is.  The claim expense is the
+    cost of settling a claim; the death benefit itself is fixed by the contract and is
+    not inflated.
 
     Commission is **not** in here.  It is :func:`commissions`, its own column, and
     :func:`net_cf` subtracts the two separately — the opposite convention from
@@ -1763,7 +1766,7 @@ def expenses(t):
     """
     acq = (acq_cost_pp() - comm_init_pp()) if (t == 0 and duration_y() == 0) else 0.0
     return (acq + maint_pp(t) * pols_if(t)
-            + claim_expense * pols_death(t))                        # noqa: F821
+            + claim_expense * inflation_factor(t) * pols_death(t))  # noqa: F821
 
 
 def commissions(t):
