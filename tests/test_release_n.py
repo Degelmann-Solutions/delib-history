@@ -1,4 +1,12 @@
-"""Release N of the Risikolebensversicherung model: provenance, portfolio and runner."""
+"""The Risikolebensversicherung model: provenance, portfolio and runner.
+
+Two states are told apart. Release N is the first commit of this repository, and its
+files are checked against upstream as that commit holds them. The present state is the
+working tree: a file that a later commit has changed is listed in
+``CHANGED_SINCE_RELEASE_N`` with the hash of its present bytes, and the portfolio hash and
+the result hash below are those of the present state. A commit that changes one of them
+updates its pin in the same commit.
+"""
 from __future__ import annotations
 
 import hashlib

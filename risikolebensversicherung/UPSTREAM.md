@@ -1,6 +1,8 @@
 # Upstream provenance: `RLV_DE_S` (lifelib `delib`)
 
-Release N of the liability cash-flow stage is the Risikolebensversicherung model of lifelib's `delib` library, copied as text at a pinned commit.
+Release N of the liability cash-flow stage is the Risikolebensversicherung model of lifelib's `delib` library, copied as text at a pinned commit. Release N is the first commit of this repository, `b64334e09613c45a7a12468dfddc0d9ec47819bb`.
+
+This file describes release N. Byte identity with upstream holds for the commit of release N. Later commits of this repository change files that are listed here; the hashes below stay those of upstream and of release N.
 
 - Upstream repository: https://github.com/lifelib-dev/lifelib
 - Commit: `fb1d195ab5423031cfd6d2548fe25a86b76cd0a1`
@@ -12,7 +14,7 @@ modelx, the engine that reads and runs the model, is not copied. It is an unmodi
 
 ## Files copied verbatim
 
-Each file is byte-identical to upstream at the pinned commit. `tests/test_release_n.py` checks these SHA-256 values.
+At the commit of release N each file is byte-identical to upstream at the pinned commit. `tests/test_release_n.py` reads the files of release N from the history and checks these SHA-256 values. For a file that a later commit has changed, the same test file pins the SHA-256 of the present bytes in `CHANGED_SINCE_RELEASE_N`; a file that is not listed there is still byte-identical to upstream.
 
 | File | SHA-256 |
 |---|---|
@@ -29,7 +31,7 @@ Each file is byte-identical to upstream at the pinned commit. `tests/test_releas
 
 ## The one deviating file
 
-`model_point_table.csv` is the only file that differs from upstream. Upstream ships a header and 14 model points. Here the file keeps that header and those 14 rows unchanged as its first 15 lines and appends generated points, new business and in force, from `point_id` 15 onwards. `tools/build_portfolio.py` writes the file and is deterministic.
+At release N `model_point_table.csv` is the only file that differs from upstream. Upstream ships a header and 14 model points. Here the file keeps that header and those 14 rows unchanged as its first 15 lines and appends generated points, new business and in force, from `point_id` 15 onwards. `tools/build_portfolio.py` writes the file and is deterministic. A later commit may change the generated points; the first 15 lines stay upstream's.
 
 SHA-256 of upstream's `model_point_table.csv` (header plus 14 rows), which equals the SHA-256 of the first 15 lines of the file here:
 
