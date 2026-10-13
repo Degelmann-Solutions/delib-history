@@ -16,7 +16,7 @@ uv run pytest -q
 
 `tools/run_release.py` projects every model point of the product folder, evaluates the five built-in checks of the model for each, and prints the point count, one SHA-256 over all result frames, and the wall time. It writes no file. The run of the 350 model points takes about 80 s on the author's machine.
 
-For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370`, and `tests/test_release_n.py` pins it. The hash is taken from raw 64-bit floats and has been confirmed on one machine only.
+For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370`. `tests/test_release_n.py` pins the hash of the present state, which is that of release N until a commit moves a result. The hash is taken from raw 64-bit floats and has been confirmed on one machine only.
 
 ## Layout
 
@@ -27,7 +27,7 @@ For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40
 | `risikolebensversicherung/LICENSE-lifelib.txt` | The licence notice of lifelib, copied from upstream. |
 | `tools/run_release.py` | The bare runner: runs every model point of a product folder and hashes the results. |
 | `tools/build_portfolio.py` | Builds `model_point_table.csv` deterministically from upstream's 14 model points. |
-| `tests/` | Provenance, portfolio, and runner tests, with the pinned portfolio hash and result hash. |
+| `tests/` | Provenance, portfolio, and runner tests, with the pinned portfolio hash and result hash of the present state. The provenance tests read the files of release N from the history, so they need Git and a complete clone. |
 
 ## The model and its limits
 
@@ -47,11 +47,11 @@ The portfolio is synthetic and contains no client data. It is built to exercise 
 
 ## History
 
-The history of the main line is never rewritten: a commit hash names a release for good. A change that moves a result updates the pinned hashes in `tests/test_release_n.py` in the same commit.
+The history of the main line is never rewritten: a commit hash names a release for good. A change that moves a result updates the pinned hashes in `tests/test_release_n.py` in the same commit, and so does a change of a file that was copied from upstream: byte identity with upstream holds for the commit of release N, and the tests pin the present bytes of every file a later commit has changed.
 
 ## Upstream attribution and licence
 
-The model files and five of the six input CSVs under `risikolebensversicherung/` are copied byte for byte from lifelib at commit `fb1d195ab5423031cfd6d2548fe25a86b76cd0a1`. The sixth CSV, `model_point_table.csv`, extends upstream's file. `risikolebensversicherung/UPSTREAM.md` records the details.
+At release N the model files and five of the six input CSVs under `risikolebensversicherung/` are copied byte for byte from lifelib at commit `fb1d195ab5423031cfd6d2548fe25a86b76cd0a1`; later commits change some of them. The sixth CSV, `model_point_table.csv`, extends upstream's file. `risikolebensversicherung/UPSTREAM.md` records the details.
 
 The repository is licensed under the MIT licence, see `LICENSE`. The files copied from lifelib are "Copyright (c) 2022 lifelib Developers"; the other files are "Copyright (c) 2026 Degelmann Solutions".
 

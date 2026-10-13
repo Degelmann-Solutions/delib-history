@@ -1,4 +1,12 @@
-"""Release N of the Risikolebensversicherung model: provenance, portfolio and runner."""
+"""The Risikolebensversicherung model: provenance, portfolio and runner.
+
+Two states are told apart. Release N is the first commit of this repository, and its
+files are checked against upstream as that commit holds them. The present state is the
+working tree: a file that a later commit has changed is listed in
+``CHANGED_SINCE_RELEASE_N`` with the hash of its present bytes, and the portfolio hash and
+the result hash below are those of the present state. A commit that changes one of them
+updates its pin in the same commit.
+"""
 from __future__ import annotations
 
 import hashlib
@@ -19,7 +27,16 @@ sys.path.insert(0, str(ROOT / "tools"))
 import build_portfolio as bp  # noqa: E402
 
 FIRST_GENERATED = bp.N_SHIPPED + 1
-RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370"
+
+RELEASE_N = "b64334e09613c45a7a12468dfddc0d9ec47819bb"  # the first commit of this repository
+RELEASE_N_PORTFOLIO_HASH = "d3d90e3725304643cfa12b79a874b34dacd2bf2edba7baabe582d0f97a11c693"
+RELEASE_N_RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370"
+
+# The present state. Files copied from upstream that a commit after release N has
+# changed, by their name in UPSTREAM.md, with the SHA-256 of their present bytes.
+CHANGED_SINCE_RELEASE_N: dict[str, str] = {}
+PORTFOLIO_HASH = RELEASE_N_PORTFOLIO_HASH
+RESULT_HASH = RELEASE_N_RESULT_HASH
 
 
 def sha256(path: Path) -> str:
@@ -34,6 +51,16 @@ def folder_hashes(folder: Path) -> dict[str, str]:
 def recorded_hashes() -> dict[str, str]:
     text = (RELEASE / "UPSTREAM.md").read_text(encoding="utf-8")
     return dict(re.findall(r"^\| `([^`]+)` \| `([0-9a-f]{64})` \|$", text, re.MULTILINE))
+
+
+def release_n_bytes(name: str) -> bytes:
+    """A file of the product folder as the commit of release N holds it, from the object store."""
+    done = subprocess.run(["git", "-C", str(ROOT), "cat-file", "blob", f"{RELEASE_N}:{RELEASE.name}/{name}"],
+                          capture_output=True)
+    assert done.returncode == 0, (
+        f"the commit of release N, {RELEASE_N}, cannot be read; the tests need Git and the "
+        f"complete history of this repository: {done.stderr.decode('utf-8', 'replace').strip()}")
+    return done.stdout
 
 
 def committed_rows() -> list[dict[str, str]]:
@@ -71,8 +98,22 @@ def test_upstream_md_records_every_copied_file():
 
 
 @pytest.mark.parametrize("name", sorted(recorded_hashes()))
-def test_copied_file_matches_upstream_hash(name):
-    assert sha256(RELEASE / name) == recorded_hashes()[name], f"{name} drifted from upstream"
+def test_copied_file_matches_upstream_hash_at_release_n(name):
+    digest = hashlib.sha256(release_n_bytes(name)).hexdigest()
+    assert digest == recorded_hashes()[name], f"{name} of release N differs from upstream"
+
+
+@pytest.mark.parametrize("name", sorted(recorded_hashes()))
+def test_copied_file_has_its_pinned_hash(name):
+    # Unchanged since release N, or changed by a commit that pinned the new bytes.
+    upstream = recorded_hashes()[name]
+    assert sha256(RELEASE / name) == CHANGED_SINCE_RELEASE_N.get(name, upstream), (
+        f"{name} differs from its pinned hash")
+    assert CHANGED_SINCE_RELEASE_N.get(name) != upstream, f"{name} is listed as changed and is not"
+
+
+def test_only_copied_files_are_listed_as_changed():
+    assert set(CHANGED_SINCE_RELEASE_N) <= set(recorded_hashes())
 
 
 def test_shipped_model_points_match_upstream_hash():
@@ -153,10 +194,15 @@ def in_force(row: dict[str, str]) -> bool:
 
 
 def test_portfolio_is_the_recorded_one():
-    # Changing the portfolio changes the baseline of release N. Do it on purpose: rebuild,
-    # then update this hash, the result hash below, and the figures in README.md.
-    assert sha256(PORTFOLIO) == (
-        "d3d90e3725304643cfa12b79a874b34dacd2bf2edba7baabe582d0f97a11c693")
+    # The portfolio of the present state. Change it on purpose: rebuild, then update
+    # PORTFOLIO_HASH, RESULT_HASH, and the figures in README.md in the same commit.
+    assert sha256(PORTFOLIO) == PORTFOLIO_HASH
+
+
+def test_portfolio_of_release_n_is_the_recorded_one():
+    released = release_n_bytes(PORTFOLIO.name)
+    assert hashlib.sha256(released).hexdigest() == RELEASE_N_PORTFOLIO_HASH
+    assert hashlib.sha256(bp.shipped_bytes(released)).hexdigest() == bp.upstream_points_hash(RELEASE)
 
 
 def test_every_dimension_is_balanced_within_each_template():
@@ -386,10 +432,13 @@ def test_two_processes_give_one_hash(runs):
 
 
 def test_result_hash_is_the_recorded_one(runs):
-    # The hash of release N. A revision that moves a result changes it on purpose: update
-    # it in the same commit. It is taken from raw 64-bit floats and has been confirmed on
-    # one machine only.
+    # The hash of the present state. A revision that moves a result changes it on
+    # purpose: update RESULT_HASH in the same commit. Until a revision moves a result it
+    # is the hash of release N. It is taken from raw 64-bit floats and has been confirmed
+    # on one machine only.
     assert runs["first"][1]["sha256"] == RESULT_HASH
+    unchanged = not CHANGED_SINCE_RELEASE_N and PORTFOLIO_HASH == RELEASE_N_PORTFOLIO_HASH
+    assert not unchanged or RESULT_HASH == RELEASE_N_RESULT_HASH
 
 
 def test_changed_generated_point_changes_the_hash(runs):
