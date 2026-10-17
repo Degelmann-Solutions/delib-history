@@ -2185,6 +2185,6 @@ roll_fwd_tol = 1e-10
 
 val_tol = 1e-09
 
-stueckkosten = 0.006
+stueckkosten = 0.012
 
 pd = ("Module", "pandas")
