@@ -2129,7 +2129,7 @@ beta_tariff = 0.05
 
 gamma_rate = 0.0003
 
-maint_prem_pct = 0.035
+maint_prem_pct = 0.032
 
 comm_rate_renew = 0.009
 
