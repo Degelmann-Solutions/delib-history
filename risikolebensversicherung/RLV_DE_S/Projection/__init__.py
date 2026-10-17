@@ -1213,11 +1213,15 @@ def prem_gross_level_pp():
 
     **This is the guaranteed premium** — the maximum the policyholder can ever be required
     to pay, unchanged for the term.  It is not what is billed.
+
+    The reference ``stueckkosten`` adds a fixed charge per policy and year to ``G``, in EUR,
+    after the equivalence.  It is a demonstration value far below a real policy fee.
     """
     denom = (1.0 - beta_tariff) * tariff_annuity() - zillmer_rate * prem_term()  # noqa: F821
     if denom <= 0.0:
         raise ValueError("degenerate premium equivalence: loadings exceed the annuity")
-    return (tariff_claims_pv() + gamma_rate * tariff_sum_pv()) / denom  # noqa: F821
+    return ((tariff_claims_pv() + gamma_rate * tariff_sum_pv()) / denom  # noqa: F821
+            + stueckkosten)                                              # noqa: F821
 
 
 def prem_net_level_pp():
@@ -2180,5 +2184,7 @@ sel_lapse_ref = 0.25
 roll_fwd_tol = 1e-10
 
 val_tol = 1e-09
+
+stueckkosten = 0.006
 
 pd = ("Module", "pandas")
