@@ -2165,7 +2165,7 @@ comm_rate_renew = 0.008
 
 expense_infl = 0.025
 
-claim_expense = 275.0
+claim_expense = 260.0
 
 suicide_share = 0.025
 
