@@ -2135,7 +2135,7 @@ claim_expense = 260.0
 
 suicide_share = 0.025
 
-suicide_years = 3
+suicide_years = 2
 
 shock_lapse_lambda = 0.0
 
