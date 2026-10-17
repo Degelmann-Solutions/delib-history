@@ -2153,7 +2153,7 @@ v_max = 0.95
 
 zillmer_rate = 0.025
 
-comm_rate_init = 0.02
+comm_rate_init = 0.025
 
 beta_tariff = 0.05
 
