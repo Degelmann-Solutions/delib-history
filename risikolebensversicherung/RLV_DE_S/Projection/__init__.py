@@ -2163,7 +2163,7 @@ maint_prem_pct = 0.03
 
 comm_rate_renew = 0.008
 
-expense_infl = 0.02
+expense_infl = 0.025
 
 claim_expense = 275.0
 
