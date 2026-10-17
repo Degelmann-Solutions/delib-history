@@ -14,7 +14,7 @@ uv run python tools/run_release.py risikolebensversicherung
 uv run pytest -q
 ```
 
-`tools/run_release.py` projects every model point of the product folder, evaluates the five built-in checks of the model for each, and prints the point count, one SHA-256 over all result frames, and the wall time. It writes no file. The run of the 350 model points takes about 80 s on the author's machine.
+`tools/run_release.py` projects every model point of the product folder, evaluates the five built-in checks of the model for each, and prints the point count, one SHA-256 over all result frames, and the wall time. It writes no file and reads no network. The run of the 350 model points takes about 80 s on the author's machine.
 
 For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370`. `tests/test_release_n.py` pins the hash of the present state, which is that of release N until a commit moves a result. The hash is taken from raw 64-bit floats and has been confirmed on one machine only.
 
