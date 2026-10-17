@@ -2,7 +2,7 @@
 
 delib-history holds reference models from the `delib` library of [lifelib](https://github.com/lifelib-dev/lifelib) as a revision history. A release of a model is a commit of this repository, and the changes between two releases are the commits between them. [DeltaRecon](https://github.com/Degelmann-Solutions/deltarecon) runs a release that is named by this repository and a commit hash, and traces the difference between two releases back to the commits that cause it.
 
-The first commit is release N of the Risikolebensversicherung model. Later commits change data, parameters, or code of the model, one change per commit.
+The first commit is release N of the Risikolebensversicherung model. Later commits change data, parameters, or code of the model, one change per commit, or only its documentation.
 
 ## Quick start
 
