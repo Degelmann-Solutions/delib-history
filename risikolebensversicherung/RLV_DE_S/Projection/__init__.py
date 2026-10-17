@@ -2133,7 +2133,7 @@ expense_infl = 0.025
 
 claim_expense = 275.0
 
-suicide_share = 0.03
+suicide_share = 0.025
 
 suicide_years = 3
 
