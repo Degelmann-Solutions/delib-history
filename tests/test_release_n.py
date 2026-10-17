@@ -37,12 +37,12 @@ RELEASE_N_RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c9
 # changed, by their name in UPSTREAM.md, with the SHA-256 of their present bytes.
 CHANGED_SINCE_RELEASE_N: dict[str, str] = {
     "RLV_DE_S/Data/__init__.py": "667c9ef071d2c005ce7cb51b6c7a60a22da2616938ad8a5720babec9bf2281ab",
-    "RLV_DE_S/Projection/__init__.py": "2e66eb006ff7af91dcad0e130aaaa71903c24227612f70d7d36da4e68e9a5aa9",
+    "RLV_DE_S/Projection/__init__.py": "4aee08322cbb446ab28606c3351b416f0015173385b59171ab9bff05b4ef40f8",
     "freq_loading_table.csv": "180052492935204542309e515ebc904e4238eff5eee28a56128fd79f3c1bb511",
     "lapse_table.csv": "981fb0a53c9a28ced2d1db44925de2f05722e7bdd567387a056fe8f43bcb8efa",
 }
 PORTFOLIO_HASH = "d5f9512b7e799a0a46069c3f6955d0a81a6e9acb3e6bc9ef48c700f32124d551"
-RESULT_HASH = "9d243f4d42c18ad3f41c6f17be0d91d3414da98fd81fc577a4b016d4a4d66a03"
+RESULT_HASH = "c2870360917250d95f823271e8a5c181adbb7fba9ed78ffbf2088065a9249d38"
 
 
 def sha256(path: Path) -> str:
