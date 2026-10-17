@@ -2157,7 +2157,7 @@ comm_rate_init = 0.025
 
 beta_tariff = 0.05
 
-gamma_rate = 0.00035
+gamma_rate = 0.0003
 
 maint_prem_pct = 0.035
 
