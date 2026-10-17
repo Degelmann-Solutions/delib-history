@@ -2125,7 +2125,7 @@ zillmer_rate = 0.025
 
 comm_rate_init = 0.025
 
-beta_tariff = 0.05
+beta_tariff = 0.055
 
 gamma_rate = 0.0003
 

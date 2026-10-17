@@ -30,18 +30,18 @@ FIRST_GENERATED = bp.N_SHIPPED + 1
 
 RELEASE_N = "b64334e09613c45a7a12468dfddc0d9ec47819bb"  # the first commit of this repository
 RELEASE_N_PORTFOLIO_HASH = "d3d90e3725304643cfa12b79a874b34dacd2bf2edba7baabe582d0f97a11c693"
-RELEASE_N_RESULT_HASH = "2620bada5f718dda7b6ddd2a8d74b77ea05abb698d46e0482f76a4389d863956"
+RELEASE_N_RESULT_HASH = "eb74f162213a37838fa3dfcdbed2d96961ab245438dcd0c90522464156282256"
 
 # The present state. Files copied from upstream that a commit after release N has
 # changed, by their name in UPSTREAM.md, with the SHA-256 of their present bytes.
 CHANGED_SINCE_RELEASE_N: dict[str, str] = {
     "RLV_DE_S/Data/__init__.py": "152bff88b270bcc9f88577fd1d8789ca29859dcf624f124df0bf6e650b9d4e13",
-    "RLV_DE_S/Projection/__init__.py": "965df62dc528a8fcf51614c78d26e45b9b51166f6f478830ad0abb68c5288173",
+    "RLV_DE_S/Projection/__init__.py": "0e449452700adb27bdc63a1fd7ceb9072060cd987da85c100386964824452717",
     "freq_loading_table.csv": "180052492935204542309e515ebc904e4238eff5eee28a56128fd79f3c1bb511",
     "lapse_table.csv": "981fb0a53c9a28ced2d1db44925de2f05722e7bdd567387a056fe8f43bcb8efa",
 }
 PORTFOLIO_HASH = "d5f9512b7e799a0a46069c3f6955d0a81a6e9acb3e6bc9ef48c700f32124d551"
-RESULT_HASH = "2620bada5f718dda7b6ddd2a8d74b77ea05abb698d46e0482f76a4389d863956"
+RESULT_HASH = "eb74f162213a37838fa3dfcdbed2d96961ab245438dcd0c90522464156282256"
 
 
 def sha256(path: Path) -> str:
