@@ -2131,7 +2131,7 @@ gamma_rate = 0.0003
 
 maint_prem_pct = 0.035
 
-comm_rate_renew = 0.008
+comm_rate_renew = 0.009
 
 expense_infl = 0.025
 
