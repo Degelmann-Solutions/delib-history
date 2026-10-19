@@ -30,7 +30,7 @@ FIRST_GENERATED = bp.N_SHIPPED + 1
 
 RELEASE_N = "b64334e09613c45a7a12468dfddc0d9ec47819bb"  # the first commit of this repository
 RELEASE_N_PORTFOLIO_HASH = "d3d90e3725304643cfa12b79a874b34dacd2bf2edba7baabe582d0f97a11c693"
-RELEASE_N_RESULT_HASH = "5a716cc57339fb2cecf19ba6d0bf41131a383fdaf2a3cbce0a9abbab7bac10e3"
+RELEASE_N_RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370"
 
 # The present state. Files copied from upstream that a commit after release N has
 # changed, by their name in UPSTREAM.md, with the SHA-256 of their present bytes.
