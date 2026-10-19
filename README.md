@@ -1,6 +1,6 @@
-# DMS.delib
+# delib-history
 
-DMS.delib holds reference models from the `delib` library of [lifelib](https://github.com/lifelib-dev/lifelib) as a revision history. A release of a model is a commit of this repository, and the changes between two releases are the commits between them. [DeltaTrace](https://github.com/Degelmann-Solutions/ActuMesh) runs a release that is named by this repository and a commit hash, and traces the difference between two releases back to the commits that cause it.
+delib-history holds reference models from the `delib` library of [lifelib](https://github.com/lifelib-dev/lifelib) as a revision history. A release of a model is a commit of this repository, and the changes between two releases are the commits between them. [DeltaRecon](https://github.com/Degelmann-Solutions/deltarecon) runs a release that is named by this repository and a commit hash, and traces the difference between two releases back to the commits that cause it.
 
 The first commit is release N of the Risikolebensversicherung model. Later commits change data, parameters, or code of the model, one change per commit, or only its documentation.
 
@@ -21,7 +21,7 @@ For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40
 ## Commits that demonstrate the interval search
 
 The commits after `f59a5be` (Inflate the claim expense with expense inflation) were added
-for DeltaTrace's interval search, which halves the history between two recorded releases
+for DeltaRecon's interval search, which halves the history between two recorded releases
 for a target and checks itself against the walk over every commit. They are placed so that
 a search for the *Bruttobeitrag* in the first five policy years meets every case it must
 report: most commits leave that target unchanged, a commit and its revert and a pair whose

@@ -1,5 +1,5 @@
 [project]
-name = "dms-delib"
+name = "delib-history"
 version = "0.1.0"
 description = "Reference models from lifelib's delib library, kept as a revision history for release-deviation analysis"
 readme = "README.md"

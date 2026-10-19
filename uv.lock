@@ -35,7 +35,7 @@ wheels = [
 ]
 
 [[package]]
-name = "dms-delib"
+name = "delib-history"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
