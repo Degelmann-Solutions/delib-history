@@ -23,7 +23,7 @@ For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40
 The commits after `f59a5be` (Inflate the claim expense with expense inflation) were added
 for DeltaRecon's interval search, which halves the history between two recorded releases
 for a target and checks itself against the walk over every commit. They are placed so that
-a search for the *Bruttobeitrag* in the first five policy years meets every case it must
+a search for the *Bruttobeitrag* in the first five projection years meets every case it must
 report: most commits leave that target unchanged, a commit and its revert and a pair whose
 second commit sets the first one's value back fall into one interval whose ends agree, and
 two steps below a tolerance of one cent fall into the two halves of one interval. They
