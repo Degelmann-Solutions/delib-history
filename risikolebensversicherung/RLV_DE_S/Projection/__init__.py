@@ -1822,6 +1822,24 @@ def liability_cf(t):
 # The published check_* identities
 
 
+def net_cf_resids():
+    """The cash-flow-statement residual of every projected month, as a dict by t.
+
+    The identity of :func:`check_net_cf_resid`, ``net_cf - (premiums - claims_death -
+    claims_lapse - claims_maturity - expenses - commissions)``, taken over the columns of
+    :func:`result_cf` once for the whole frame rather than by reading the frame's row of
+    each month.  Every column of the frame is float64, so a row read out of it held the
+    same float64 values as the columns hold here, and the subtractions run in the same
+    order: each residual is the same number to the last bit.
+    """
+    frame = result_cf()
+    rows = zip(frame.index.tolist(),
+               *(frame[name].tolist() for name in (
+                   "net_cf", "premiums", "claims_death", "claims_lapse",
+                   "claims_maturity", "expenses", "commissions")))
+    return {t: n - (p - cd - cl - cm - e - c) for t, n, p, cd, cl, cm, e, c in rows}
+
+
 def check_net_cf_resid(t):
     """The cash-flow-statement residual in month t; zero everywhere.
 
@@ -1845,11 +1863,11 @@ def check_net_cf_resid(t):
     and ``prem_rebate`` is the difference between them and must not be subtracted a second
     time — and the commission convention, which is a column of its own here and part of
     the expense total in ``frlib.TD_FR_S``.
+
+    The residuals of all months are computed together, once per model point, by
+    :func:`net_cf_resids`; this cell reads month ``t`` from there.
     """
-    row = result_cf().loc[t]
-    rebuilt = (row["premiums"] - row["claims_death"] - row["claims_lapse"]
-               - row["claims_maturity"] - row["expenses"] - row["commissions"])
-    return float(row["net_cf"] - rebuilt)
+    return float(net_cf_resids()[t])
 
 
 def check_net_cf():
