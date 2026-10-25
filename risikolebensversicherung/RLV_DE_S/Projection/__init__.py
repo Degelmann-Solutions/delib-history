@@ -111,6 +111,7 @@ w(t)                       lapse_rate(t)                   Annual lapse rate of 
 wm(t)                      lapse_rate_mth(t)               The same, applied in month t
 (table)                    lapse_rate_base(t)              Table lapse rate
 w_cum(t)                   lapse_cum(t)                    Cumulative lapse proportion
+1 - w_cum(t)               lapse_surv(t)                   Lapse-only survivorship
 M_shock(t)                 shock_lapse_factor(t)           Premium-shock multiplier
 (none)                     sel_lapse_factor(t)             Loading on persisters
 v^y                        disc_factor(y)                  Rechnungszins discount
@@ -1063,12 +1064,28 @@ def lapse_rate_mth(t):
     return 1.0 - (1.0 - lapse_rate(t)) ** (1.0 / 12.0)
 
 
+def lapse_surv(t):
+    """1 - w_cum(t): the proportion of the cohort not yet lapsed, entering period t.
+
+    ``prod (1 - wm(s))`` over the projected **months** before ``t``, carried as a
+    recursion: 1.0 at and before ``t = proj_start()``, and
+    ``lapse_surv(t - 1) * (1 - wm(t - 1))`` after it.  The recursion multiplies the same
+    factors in the same order as a product taken from 1.0 month by month, so it gives the
+    same number to the last bit, and each month costs one multiplication rather than one
+    per earlier month.  It is held as a cell of its own because ``1 - lapse_cum(t)`` would
+    not give this number back exactly.
+    """
+    if t <= proj_start():
+        return 1.0
+    return lapse_surv(t - 1) * (1.0 - lapse_rate_mth(t - 1))
+
+
 def lapse_cum(t):
     """w_cum(t): the cumulative lapse proportion entering period t.
 
-    ``1 - prod (1 - wm(s))`` over the projected **months** before ``t``.  A proportion of
-    the original cohort on a **lapse-only** basis, not a running total of
-    :func:`pols_lapse` and not read off :func:`pols_if`: it feeds
+    ``1 - prod (1 - wm(s))`` over the projected **months** before ``t``, read as
+    ``1 - lapse_surv(t)``.  A proportion of the original cohort on a **lapse-only** basis,
+    not a running total of :func:`pols_lapse` and not read off :func:`pols_if`: it feeds
     :func:`sel_lapse_factor`, which loads *mortality*, so building it from the in-force
     count would close a loop between the two decrements.  Zero at ``t = proj_start()``.
 
@@ -1079,10 +1096,7 @@ def lapse_cum(t):
     """
     if t <= proj_start():
         return 0.0
-    surv = 1.0
-    for s in range(proj_start(), t):
-        surv *= (1.0 - lapse_rate_mth(s))
-    return 1.0 - surv
+    return 1.0 - lapse_surv(t)
 
 
 # ==========================================================================
