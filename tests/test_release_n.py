@@ -16,6 +16,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import modelx as mx
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -35,8 +36,8 @@ RELEASE_N_RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c9
 # The present state. Files copied from upstream that a commit after release N has
 # changed, by their name in UPSTREAM.md, with the SHA-256 of their present bytes.
 CHANGED_SINCE_RELEASE_N: dict[str, str] = {
-    "RLV_DE_S/Data/__init__.py": "152bff88b270bcc9f88577fd1d8789ca29859dcf624f124df0bf6e650b9d4e13",
-    "RLV_DE_S/Projection/__init__.py": "5ce2afd253c7d12ff8427e9c0581a8d3fef087d496201aa5331dd6c09a71e7a5",
+    "RLV_DE_S/Data/__init__.py": "667c9ef071d2c005ce7cb51b6c7a60a22da2616938ad8a5720babec9bf2281ab",
+    "RLV_DE_S/Projection/__init__.py": "c89a10fb9251eec932a827a72ff654e991eed2387575859c47afb73c42f6d43f",
     "freq_loading_table.csv": "180052492935204542309e515ebc904e4238eff5eee28a56128fd79f3c1bb511",
     "lapse_table.csv": "981fb0a53c9a28ced2d1db44925de2f05722e7bdd567387a056fe8f43bcb8efa",
 }
@@ -378,11 +379,12 @@ def parse_output(stdout: str) -> dict[str, str]:
 
 @pytest.fixture(scope="session")
 def runs(tmp_path_factory):
-    """Run the runner four times, in parallel processes, and collect the outcomes.
+    """Run the runner five times, in parallel processes, and collect the outcomes.
 
     ``first`` and ``second`` are two processes on the product folder. ``changed`` is a scratch copy
     with one value changed in a generated point. ``false_check`` is a scratch copy with
-    one generated point whose ``duration_y`` equals its ``policy_term``.
+    one generated point whose ``duration_y`` equals its ``policy_term``. ``missing_key`` is a
+    scratch copy with one generated point whose ``mort_table_id`` names no table.
     """
     tmp_path = tmp_path_factory.mktemp("runs")
     last = len(committed_rows())
@@ -391,10 +393,12 @@ def runs(tmp_path_factory):
     false_check = scratch_copy(tmp_path, "false_check")
     term = committed_rows()[FIRST_GENERATED - 1]["policy_term"]
     edit_point(false_check, FIRST_GENERATED, duration_y=term)
+    missing_key = scratch_copy(tmp_path, "missing_key")
+    edit_point(missing_key, FIRST_GENERATED, mort_table_id="no_such_table")
 
     before = folder_hashes(RELEASE)
     folders = {"first": RELEASE, "second": RELEASE, "changed": changed,
-               "false_check": false_check}
+               "false_check": false_check, "missing_key": missing_key}
     processes = {
         name: subprocess.Popen([sys.executable, str(RUNNER), str(folder)], cwd=ROOT,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -457,6 +461,29 @@ def test_false_check_gives_non_zero_exit_and_names_point_and_check(runs):
     assert code == 1
     assert f"point {FIRST_GENERATED}: check_pols_roll_fwd is false" in stderr
     assert int(output["model points"]) == len(committed_rows())
+
+
+def test_missing_table_key_fails_the_point(runs, tmp_path):
+    # A lookup of a key the input table does not hold raises a KeyError, as DataFrame.at
+    # did, and the runner names the point and the line of the lookup; the other points
+    # still run.
+    code, output, stderr = runs["missing_key"]
+    assert code == 1
+    failed = [line for line in stderr.splitlines() if line.startswith("FAILED ")]
+    assert len(failed) == 1
+    assert failed[0].startswith(f"FAILED point {FIRST_GENERATED}: result_cf raised FormulaError")
+    assert "mort_table_id()" in failed[0]
+    assert int(output["model points"]) == len(committed_rows())
+
+    missing_key = scratch_copy(tmp_path, "missing_key")
+    edit_point(missing_key, FIRST_GENERATED, mort_table_id="no_such_table")
+    model = mx.read_model(str(missing_key / "RLV_DE_S"))
+    try:
+        with pytest.raises(Exception) as raised:
+            model.Projection[FIRST_GENERATED].result_cf()
+        assert "KeyError: ('no_such_table'" in str(raised.value)
+    finally:
+        model.close()
 
 
 def test_run_leaves_the_product_folder_untouched(runs):

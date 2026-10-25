@@ -25,18 +25,25 @@ on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so the
 model works wherever the repository is checked out. Each table has a filename Reference
-and a reader Cells:
+and a reader Cells, and each table the projection looks values up in has a lookup Cells
+besides:
 
-========================  ============================  ==========================
-Reference                 Cells                         File
-========================  ============================  ==========================
-model_point_file          model_point_table()           model_point_table.csv
-mort_table_file           mort_table()                  mort_table.csv
-benefit_schedule_file     benefit_schedule()            benefit_schedule.csv
-nvg_schedule_file         nvg_schedule()                nvg_schedule.csv
-lapse_file                lapse_table()                 lapse_table.csv
-freq_loading_file         freq_loading_table()          freq_loading_table.csv
-========================  ============================  ==========================
+=====================  ====================  =================  ======================
+Reference              Cells                 Lookup Cells       File
+=====================  ====================  =================  ======================
+model_point_file       model_point_table()   (none)             model_point_table.csv
+mort_table_file        mort_table()          mort_rates()       mort_table.csv
+benefit_schedule_file  benefit_schedule()    benefit_factors()  benefit_schedule.csv
+nvg_schedule_file      nvg_schedule()        sum_uplifts()      nvg_schedule.csv
+lapse_file             lapse_table()         lapse_rates()      lapse_table.csv
+freq_loading_file      freq_loading_table()  freq_loadings()    freq_loading_table.csv
+=====================  ====================  =================  ======================
+
+A lookup Cells holds the table's value columns as a plain ``dict``, built once per model
+from the reader's DataFrame, so that a projection reads one value by a dictionary lookup
+rather than by ``DataFrame.at``, which costs far more and runs many times per model point.
+The values are the table's own, boxed as Python ``float`` and ``int`` with the same
+bits; the reader Cells keep returning the DataFrame for every other use.
 
 **Every file but the model point table carries a per-row ``provenance`` column.** That is
 this library's second ruling and it is machine-checked in
@@ -235,6 +242,53 @@ def freq_loading_table():
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / freq_loading_file, index_col="prem_freq")      # noqa: F821
+
+
+def mort_rates():
+    """The ``mort_rate`` column of :func:`mort_table` as a dict.
+
+    Keyed by the tuple ``(table_id, sex, smoker, age)``, as the table is indexed;
+    ``Projection.mort_rate_at_age`` reads it.
+    """
+    return mort_table()["mort_rate"].to_dict()
+
+
+def benefit_factors():
+    """The ``benefit_factor`` column of :func:`benefit_schedule` as a dict.
+
+    Keyed by the tuple ``(schedule_id, policy_year)``, the policy year **1-based** as in
+    the file; ``Projection.benefit_factor`` reads it.
+    """
+    return benefit_schedule()["benefit_factor"].to_dict()
+
+
+def sum_uplifts():
+    """The ``sum_uplift`` column of :func:`nvg_schedule` as a dict.
+
+    Keyed by the tuple ``(nvg_id, policy_year)``, the policy year **1-based** as in the
+    file; ``Projection.sum_uplift_y`` reads it.
+    """
+    return nvg_schedule()["sum_uplift"].to_dict()
+
+
+def lapse_rates():
+    """The two rate columns of :func:`lapse_table` as a dict of dicts.
+
+    ``lapse_rates()[column][policy_year]``, with ``column`` one of ``lapse_rate`` and
+    ``lapse_rate_einmal`` and the policy year **1-based** as in the file;
+    ``Projection.lapse_rate_base`` reads it.
+    """
+    return lapse_table()[["lapse_rate", "lapse_rate_einmal"]].to_dict()
+
+
+def freq_loadings():
+    """The two value columns of :func:`freq_loading_table` as a dict of dicts.
+
+    ``freq_loadings()[column][prem_freq]``, with ``column`` one of ``prem_freq_load``
+    and ``instalments``; ``Projection.prem_freq_load`` and ``Projection.instalments``
+    read it.  ``instalments`` keeps its integers.
+    """
+    return freq_loading_table()[["prem_freq_load", "instalments"]].to_dict()
 
 
 # ---------------------------------------------------------------------------

@@ -60,18 +60,20 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 on first evaluation.
 
 Each table has a filename Reference and a reader Cells, both on
-:mod:`~.RLV_DE_S.Data`, reached here through the ``data`` Reference:
+:mod:`~.RLV_DE_S.Data`, reached here through the ``data`` Reference. The tables this Space
+looks values up in also have a lookup Cells there, a plain ``dict`` of the table's value
+columns, and the lookups read that rather than the DataFrame:
 
-========================  =================================  ==========================
-Reference                 Cells                              File
-========================  =================================  ==========================
-model_point_file          data.model_point_table()           model_point_table.csv
-mort_table_file           data.mort_table()                  mort_table.csv
-benefit_schedule_file     data.benefit_schedule()            benefit_schedule.csv
-nvg_schedule_file         data.nvg_schedule()                nvg_schedule.csv
-lapse_file                data.lapse_table()                 lapse_table.csv
-freq_loading_file         data.freq_loading_table()          freq_loading_table.csv
-========================  =================================  ==========================
+=====================  =========================  ======================  ======================
+Reference              Cells                      Lookup Cells            File
+=====================  =========================  ======================  ======================
+model_point_file       data.model_point_table()   (none)                  model_point_table.csv
+mort_table_file        data.mort_table()          data.mort_rates()       mort_table.csv
+benefit_schedule_file  data.benefit_schedule()    data.benefit_factors()  benefit_schedule.csv
+nvg_schedule_file      data.nvg_schedule()        data.sum_uplifts()      nvg_schedule.csv
+lapse_file             data.lapse_table()         data.lapse_rates()      lapse_table.csv
+freq_loading_file      data.freq_loading_table()  data.freq_loadings()    freq_loading_table.csv
+=====================  =========================  ======================  ======================
 
 .. rubric:: Naming
 
@@ -723,8 +725,8 @@ def mort_rate_at_age(sex_code, smoker_code, x):
     unsourced mortality level to a single number.  A **[std]** proxy for DAV 2008 T; see
     the ``Data`` docstring for the anchors a replacement must preserve.
     """
-    return float(data.mort_table().at[                               # noqa: F821
-        (mort_table_id(), sex_code, smoker_code, int(x)), "mort_rate"])
+    return float(data.mort_rates()[                                  # noqa: F821
+        (mort_table_id(), sex_code, smoker_code, int(x))])
 
 
 def mort_rate_base(t):
@@ -862,8 +864,8 @@ def benefit_factor(t):
     contractual schedule parameter fixed at issue; it does not follow the borrower's loan
     if that is refinanced, repaid early or rolled onto a new fixed rate.
     """
-    return float(data.benefit_schedule().at[                         # noqa: F821
-        (benefit_schedule_id(), policy_year(t)), "benefit_factor"])
+    return float(data.benefit_factors()[                             # noqa: F821
+        (benefit_schedule_id(), policy_year(t))])
 
 
 def sum_uplift_y(y):
@@ -885,8 +887,8 @@ def sum_uplift_y(y):
     decision.  What the model does *with* an increase is not exogenous — see
     :func:`benefit_paid_pp`.
     """
-    return float(data.nvg_schedule().at[                             # noqa: F821
-        (nvg_schedule_id(), int(y) + 1), "sum_uplift"])
+    return float(data.sum_uplifts()[                                 # noqa: F821
+        (nvg_schedule_id(), int(y) + 1)])
 
 
 def sum_uplift(t):
@@ -990,8 +992,8 @@ def lapse_rate_base(t):
     :func:`lapse_rate_mth` is where the spreading happens.
     """
     column = "lapse_rate_einmal" if premium_form() == "einmal" else "lapse_rate"
-    return float(data.lapse_table().at[                              # noqa: F821
-        policy_year(t), column])
+    return float(data.lapse_rates()[column][                         # noqa: F821
+        policy_year(t)])
 
 
 def shock_lapse_factor(t):
@@ -1282,8 +1284,8 @@ def prem_freq_load():
     rebate and the paid premium, so the split identity holds at every frequency.  Applying
     it to each stream separately, or twice, is a listed pitfall.
     """
-    return float(data.freq_loading_table().at[                       # noqa: F821
-        prem_freq(), "prem_freq_load"])
+    return float(data.freq_loadings()["prem_freq_load"][             # noqa: F821
+        prem_freq()])
 
 
 def instalments():
@@ -1297,8 +1299,8 @@ def instalments():
     never rendered.  On the monthly grid it drives :func:`prem_cycle` and
     :func:`prem_inst_pp`.
     """
-    return int(data.freq_loading_table().at[                         # noqa: F821
-        prem_freq(), "instalments"])
+    return int(data.freq_loadings()["instalments"][                  # noqa: F821
+        prem_freq()])
 
 
 def prem_cycle():
