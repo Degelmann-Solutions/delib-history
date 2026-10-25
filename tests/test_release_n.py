@@ -1,12 +1,4 @@
-"""The Risikolebensversicherung model: provenance, portfolio and runner.
-
-Two states of the repository are told apart. Release N is the first commit of this repository, and its
-files are checked against upstream as that commit holds them. The present state is the
-working tree: a file that a later commit has changed is listed in
-``CHANGED_SINCE_RELEASE_N`` with the hash of its present bytes, and the portfolio hash and
-the result hash below are those of the present state. A commit that changes one of them
-updates its pin in the same commit, as every commit of the main line does.
-"""
+"""Release N of the Risikolebensversicherung model: provenance, portfolio and runner."""
 from __future__ import annotations
 
 import hashlib
@@ -36,13 +28,11 @@ RELEASE_N_RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c9
 # The present state. Files copied from upstream that a commit after release N has
 # changed, by their name in UPSTREAM.md, with the SHA-256 of their present bytes.
 CHANGED_SINCE_RELEASE_N: dict[str, str] = {
-    "RLV_DE_S/Data/__init__.py": "667c9ef071d2c005ce7cb51b6c7a60a22da2616938ad8a5720babec9bf2281ab",
-    "RLV_DE_S/Projection/__init__.py": "c131ec03970eda7bb8b1cc70b8a4c641df05aceabd34aa4d189ea4187e4fcc62",
-    "freq_loading_table.csv": "180052492935204542309e515ebc904e4238eff5eee28a56128fd79f3c1bb511",
-    "lapse_table.csv": "981fb0a53c9a28ced2d1db44925de2f05722e7bdd567387a056fe8f43bcb8efa",
+    "RLV_DE_S/Data/__init__.py": "cf38b2fe008d718f8f7f631fd558cd2f606ccaa17d08e70b416f46d849e50064",
+    "RLV_DE_S/Projection/__init__.py": "a2c3be331c8586a941f327106f0877ba4e6756e87e8ac642740c8c93dfa03b64",
 }
-PORTFOLIO_HASH = "d5f9512b7e799a0a46069c3f6955d0a81a6e9acb3e6bc9ef48c700f32124d551"
-RESULT_HASH = "5a716cc57339fb2cecf19ba6d0bf41131a383fdaf2a3cbce0a9abbab7bac10e3"
+PORTFOLIO_HASH = RELEASE_N_PORTFOLIO_HASH
+RESULT_HASH = "215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370"
 
 
 def sha256(path: Path) -> str:

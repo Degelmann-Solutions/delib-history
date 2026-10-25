@@ -1,4 +1,4 @@
-"""Build the portfolio: upstream's 14 model points plus generated ones.
+"""Build the portfolio of release N: upstream's 14 model points plus generated ones.
 
     uv run python tools/build_portfolio.py [product-folder]
 
@@ -24,7 +24,7 @@ surplus form, number of lives, rating factor) and varies these dimensions:
 * issue age, at 24 evenly spaced positions between the lowest and the highest issue age
   that the envelope allows for the term, so one variant per template sits on each edge;
 * sex and smoker status, the four combinations equally often;
-* sum assured, the template's amount times 0.5, 1, 1.5 or 2.5;
+* sum assured, the template's amount times 0.5, 1, 1.5 or 2;
 * premium frequency, for regular-premium templates;
 * state: 16 variants are new business, 8 are in force, two each after one completed year,
   after 40 percent of the term, after 70 percent of the term and in the final year (for
@@ -92,7 +92,7 @@ VALUATION_DATE = date(2026, 1, 1)
 TERMS = (5, 10, 15, 20, 25, 30, 35, 40)
 # Both increases of the NVG schedule (policy years 6 and 12) lie inside these terms.
 NVG_TERMS = (15, 20, 25, 28)
-SUM_ASSURED_FACTORS = (0.5, 1.0, 1.5, 2.5)
+SUM_ASSURED_FACTORS = (0.5, 1.0, 1.5, 2.0)
 SEXES = ("M", "F")
 SMOKERS = ("N", "R")
 PREM_FREQS = ("jaehrlich", "halbjaehrlich", "vierteljaehrlich", "monatlich")

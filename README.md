@@ -2,7 +2,7 @@
 
 delib-history holds reference models from the `delib` library of [lifelib](https://github.com/lifelib-dev/lifelib) as a revision history. A release of a model is a commit of this repository, and the changes between two releases are the commits between them. [DeltaRecon](https://github.com/Degelmann-Solutions/deltarecon) runs a release that is named by this repository and a commit hash, and traces the difference between two releases back to the commits that cause it.
 
-The first commit is release N of the Risikolebensversicherung model. Later commits change data, parameters, or code of the model, one change per commit, or only its documentation.
+The first commit is release N of the Risikolebensversicherung model. Later commits change data, parameters, or code of the model, one change per commit.
 
 ## Quick start
 
@@ -14,20 +14,9 @@ uv run python tools/run_release.py risikolebensversicherung
 uv run pytest -q
 ```
 
-`tools/run_release.py` projects every model point of the product folder, evaluates the five built-in checks of the model for each, and prints the point count, one SHA-256 over all result frames, and the wall time. It writes no file and reads no network. The run of the 350 model points takes about 50 s on the author's machine.
+`tools/run_release.py` projects every model point of the product folder, evaluates the five built-in checks of the model for each, and prints the point count, one SHA-256 over all result frames, and the wall time. It writes no file. The run of the 350 model points takes about 50 s on the author's machine.
 
-For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370`. `tests/test_release_n.py` pins the hash of the present state, which is that of release N until a commit moves a result. The hash is taken from raw 64-bit floats and has been confirmed on one machine only.
-
-## Commits that demonstrate the interval search
-
-The commits after `f59a5be` (Inflate the claim expense with expense inflation) were added
-for DeltaRecon's interval search, which halves the history between two recorded releases
-for a target and checks itself against the walk over every commit. They are placed so that
-a search for the *Bruttobeitrag* in the first five projection years meets every case it must
-report: most commits leave that target unchanged, a commit and its revert and a pair whose
-second commit sets the first one's value back fall into one interval whose ends agree, and
-two steps below a tolerance of one cent fall into the two halves of one interval. They
-are no seeded changes of a benchmark: they carry no tiers and no sealed ground truth.
+For release N the hash is `215f0fac603116f1e8def81bd386730a252d0ea082143b427ea40c95f4901370`, and `tests/test_release_n.py` pins it. The hash is taken from raw 64-bit floats and has been confirmed on one machine only.
 
 ## Layout
 
@@ -38,7 +27,7 @@ are no seeded changes of a benchmark: they carry no tiers and no sealed ground t
 | `risikolebensversicherung/LICENSE-lifelib.txt` | The licence notice of lifelib, copied from upstream. |
 | `tools/run_release.py` | The bare runner: runs every model point of a product folder and hashes the results. |
 | `tools/build_portfolio.py` | Builds `model_point_table.csv` deterministically from upstream's 14 model points. |
-| `tests/` | Provenance, portfolio, and runner tests, with the pinned portfolio hash and result hash of the present state. The provenance tests read the files of release N from the history, so they need Git and a complete clone. |
+| `tests/` | Provenance, portfolio, and runner tests, with the pinned portfolio hash and result hash. |
 
 ## The model and its limits
 
@@ -58,13 +47,13 @@ The portfolio is synthetic and contains no client data. It is built to exercise 
 
 ## History
 
-The main line is the chain of first parents of `main`: `git log --first-parent main` lists it. Each of its commits is one change, and a branch that was merged is one change, the merge; the commits inside the branch are not on the main line. The commit message says what the change is meant to do, and the files it touches say what kind of change it is: `model_point_table.csv` is data, the other CSV files of the product folder are parameters, and the folder `RLV_DE_S` is code.
+The history of the main line is never rewritten: a commit hash names a release for good. A change that moves a result updates the pinned hashes in `tests/test_release_n.py` in the same commit.
 
-The history of the main line is never rewritten: a commit hash names a release for good. A change that moves a result updates the pinned hashes in `tests/test_release_n.py` in the same commit, and so does a change of a file that was copied from upstream: byte identity with upstream holds for the commit of release N, and the tests pin the present bytes of every file a later commit has changed.
+The commit after `244f18b`, *Set the model back to release N and keep the three fixes*, holds the data, parameters and code of release N with the three fixes of `038dd35`, `78d8baa` and `244f18b`, which keep every result bit for bit, and the commits after it repeat the earlier changes from `25a166a` to `fefc8cc` on the fixed model, in their order and with their messages.
 
 ## Upstream attribution and licence
 
-At release N the model files and five of the six input CSVs under `risikolebensversicherung/` are copied byte for byte from lifelib at commit `fb1d195ab5423031cfd6d2548fe25a86b76cd0a1`; later commits change some of them. The sixth CSV, `model_point_table.csv`, extends upstream's file. `risikolebensversicherung/UPSTREAM.md` records the details.
+The model files and five of the six input CSVs under `risikolebensversicherung/` are copied byte for byte from lifelib at commit `fb1d195ab5423031cfd6d2548fe25a86b76cd0a1`. The sixth CSV, `model_point_table.csv`, extends upstream's file. `risikolebensversicherung/UPSTREAM.md` records the details.
 
 The repository is licensed under the MIT licence, see `LICENSE`. The files copied from lifelib are "Copyright (c) 2022 lifelib Developers"; the other files are "Copyright (c) 2026 Degelmann Solutions".
 

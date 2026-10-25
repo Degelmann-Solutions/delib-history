@@ -981,18 +981,14 @@ def suicide_factor(t):
 def lapse_rate_base(t):
     """The table lapse rate for period t, from *lapse_table.csv*.
 
-    The table holds two rates per policy year, both **[std]**: ``lapse_rate`` for a
-    policy on a running premium, and ``lapse_rate_einmal`` for a single-premium policy,
-    which has no premium left to stop paying and is set at half the running-premium rate.
-    The column is chosen by :func:`premium_form`.  The values are those of the file; this
-    docstring does not repeat them.  The file is keyed on the contractual **1-based**
-    ``policy_year``, so the lookup maps through :func:`policy_year` — months
-    ``t = 0 ... 11`` read the file's policy year 1.  An **annual** rate, and one the table
-    publishes for the final policy year too; :func:`lapse_rate` is where the zero goes and
-    :func:`lapse_rate_mth` is where the spreading happens.
+    6 % in policy year 1, 4 % in policy years 2 and 3, 3 % thereafter, all **[std]**.  The
+    file is keyed on the contractual **1-based** ``policy_year``, so the lookup maps
+    through :func:`policy_year` — months ``t = 0 ... 11`` read the file's policy year 1.
+    An **annual** rate, and one the table publishes for the final policy year too;
+    :func:`lapse_rate` is where the zero goes and :func:`lapse_rate_mth` is where the
+    spreading happens.
     """
-    column = "lapse_rate_einmal" if premium_form() == "einmal" else "lapse_rate"
-    return float(data.lapse_rates()[column][                         # noqa: F821
+    return float(data.lapse_rates()["lapse_rate"][                   # noqa: F821
         policy_year(t)])
 
 
@@ -1213,15 +1209,11 @@ def prem_gross_level_pp():
 
     **This is the guaranteed premium** — the maximum the policyholder can ever be required
     to pay, unchanged for the term.  It is not what is billed.
-
-    The reference ``stueckkosten`` adds a fixed charge per policy and year to ``G``, in EUR,
-    after the equivalence.  It is a demonstration value far below a real policy fee.
     """
     denom = (1.0 - beta_tariff) * tariff_annuity() - zillmer_rate * prem_term()  # noqa: F821
     if denom <= 0.0:
         raise ValueError("degenerate premium equivalence: loadings exceed the annuity")
-    return ((tariff_claims_pv() + gamma_rate * tariff_sum_pv()) / denom  # noqa: F821
-            + stueckkosten)                                              # noqa: F821
+    return (tariff_claims_pv() + gamma_rate * tariff_sum_pv()) / denom  # noqa: F821
 
 
 def prem_net_level_pp():
@@ -1706,7 +1698,7 @@ def comm_init_pp():
 
 
 def inflation_factor(t):
-    """(1 + pi)^duration(t): expense inflation on the sum-related admin charge and the claim expense.
+    """(1 + pi)^duration(t): expense inflation on the sum-related admin charge only.
 
     2,0 % a year **[std]**, stepping on the **policy anniversary** and flat across a
     policy year's twelve months — the form ``Sofort_DE_S`` already uses in this library,
@@ -1757,10 +1749,7 @@ def expenses(t):
     Acquisition cost net of the initial commission in month ``t = 0`` and only where
     ``duration_y = 0`` — a single amount at issue, not an annualised loading and not a
     twelfth of one; maintenance and collection on the opening in-force; and the claim
-    expense on the month's deaths, 250 € each **[std]** at issue prices, inflated with
-    :func:`inflation_factor` as the administration charge is.  The claim expense is the
-    cost of settling a claim; the death benefit itself is fixed by the contract and is
-    not inflated.
+    expense on the month's deaths, 250 € each **[std]**.
 
     Commission is **not** in here.  It is :func:`commissions`, its own column, and
     :func:`net_cf` subtracts the two separately — the opposite convention from
@@ -1770,7 +1759,7 @@ def expenses(t):
     """
     acq = (acq_cost_pp() - comm_init_pp()) if (t == 0 and duration_y() == 0) else 0.0
     return (acq + maint_pp(t) * pols_if(t)
-            + claim_expense * inflation_factor(t) * pols_death(t))  # noqa: F821
+            + claim_expense * pols_death(t))                        # noqa: F821
 
 
 def commissions(t):
@@ -2157,23 +2146,23 @@ v_max = 0.95
 
 zillmer_rate = 0.025
 
-comm_rate_init = 0.025
+comm_rate_init = 0.02
 
-beta_tariff = 0.055
+beta_tariff = 0.05
 
 gamma_rate = 0.0003
 
-maint_prem_pct = 0.032
+maint_prem_pct = 0.03
 
-comm_rate_renew = 0.009
+comm_rate_renew = 0.01
 
-expense_infl = 0.022
+expense_infl = 0.02
 
-claim_expense = 260.0
+claim_expense = 250.0
 
-suicide_share = 0.025
+suicide_share = 0.03
 
-suicide_years = 2
+suicide_years = 3
 
 shock_lapse_lambda = 0.0
 
@@ -2184,7 +2173,5 @@ sel_lapse_ref = 0.25
 roll_fwd_tol = 1e-10
 
 val_tol = 1e-09
-
-stueckkosten = 0.012
 
 pd = ("Module", "pandas")

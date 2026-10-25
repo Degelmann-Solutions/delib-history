@@ -25,7 +25,7 @@ each point these bytes enter, in this order:
 
 Nothing is rounded, so any change in any value, row, column or point changes the hash.
 
-This is a minimal runner of one product folder. It carries no contract and no run record.
+This is a minimal runner. It carries no contract and no run record.
 """
 from __future__ import annotations
 
